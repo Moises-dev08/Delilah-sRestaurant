@@ -1,0 +1,599 @@
+openapi: 3.0.0
+info:
+  description: API model
+  version: "1.0.0"
+  title: Delilah's Restaurant Proyect
+  
+tags:
+- name: "Get"
+  description: "user/s, product/s, order/s, orderbyproduct, ordersbyproducts endpoints"
+- name: "Api"
+  description: "Login endpoint"
+- name: "Sign in"
+  description: "Sign in endpoints"
+- name: "Update"
+  description: "Update endpoints"
+- name: "Delete"
+  description: "Delete endpoints"
+  
+paths:
+  /get/users: 
+    get:
+      tags: 
+        - Get
+      summary: Get user/s
+      description: If the token belongs to the Administrator, the API will return all the registered users in the data base. If the token belongs to the users, the API will return his personal data.
+      parameters: 
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 'Ok.'
+        400:
+          description: 'Bad request / No result.' 
+        401:
+          description: 'Invalid token.' 
+  /get/products: 
+    get:
+      tags:
+        - Get
+      summary: Gets products list.
+      description: When the Token is checked correctly, the API will return the available products.
+      parameters: 
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 'Ok'
+        400:
+          description: 'Bad request / No result.' 
+        401:
+          description: 'Invalid Token.'
+  /get/product: 
+    get:
+      tags:
+        - Get
+      summary: Get specific product.
+      description: When the Token is checked correctly, the API will return the requested products. 
+      parameters: 
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: 'Ok'
+          content: 
+            json:
+              schema:
+                "$ref": "#/components/schemas/Product"
+        400:
+          description: 'Bad request / No result.' 
+        401:
+          description: 'Invalid Token.'
+  /get/orders: 
+    get:
+      tags:
+        - Get
+      summary: Gets order list.
+      description:  If the token belongs to the Administrator, and it has been checked , the API will return the orders list. If the token belongs to the users, and it has been checked, the API will return the users's personal order.
+      parameters: 
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 'Ok'
+          content: 
+            json:
+              schema:
+                "$ref": "#/components/schemas/SpecificOrder"
+        400:
+          description: 'Bad request / No result.' 
+        401:
+          description: 'Invalid Token.'
+  /get/ordersbyproducts: 
+    get:
+      tags:
+        - Get
+      summary: Gets order detail
+      description: Get the ordered products by the users's id_order.
+      parameters: 
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: id
+          required: true
+          description: Order Id.
+          schema:
+            type: integer
+      responses:
+        200:
+          description: 'Ok'
+          content: 
+            json:
+              schema:
+                "$ref": "#/components/schemas/ProductIdResponse"
+        400:
+          description: 'Bad request / No result.' 
+        401:
+          description: 'Invalid Token.'
+  
+  /api/logIn: 
+    post:
+      tags: 
+        - Api
+      summary: User log in.
+      description: User validation and Token response .
+      requestBody:
+        content:
+          json:
+            schema:
+              $ref: '#/components/schemas/LogInReq'
+        description: User_name, user_type and password
+      responses:
+        200:
+          description: token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/login"
+                
+        400:
+          description: "Error: Incorrect user name or password. Please try again"
+  /signIn/newUser: 
+    post:
+      tags: 
+        - Sign in
+      summary: Sign in new user.
+      description: User registration.
+      requestBody:
+        content:
+          json:
+            schema:
+              $ref: '#/components/schemas/NewUser'
+        description: Personal user data.
+      responses: 
+        201:
+          description: 'User registred.' 
+        400:
+          description: 'User already registred.'
+        500:
+          description: 'Missing parameters.' 
+  /signIn/products: 
+    post:
+      tags: 
+        - Sign in
+      summary: Upload a new product by the administrator.
+      parameters: 
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+      responses:
+        201:
+          description: 'Your product has been succesfully uploaded.'
+        400:
+          description: 'Error: You need a token.'
+        401:
+          description: 'Invalid Token.'
+        501:
+          description: 'Error: Missing parameters.'
+      requestBody:
+        content:
+          json:
+            schema:
+              $ref: '#/components/schemas/NewProductAdded'
+        description: This product will be uploaded.
+  /signIn/orders: 
+    post:
+      tags: 
+        - Sign in
+      summary: Add new order
+      parameters: 
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          json:
+            schema:
+              $ref: '#/components/schemas/ProductIdResponse'
+      responses:
+        201:
+          description: 'Your order has been registred correctly.'
+        400:
+          description: 'Error: You need a token.'
+        401:
+          description: 'Invalid Token.'
+        500:
+          description: 'Error: Missing parameters.'
+        
+  /update/orders: 
+    patch:
+      tags: 
+        - Update
+      summary: Change status order.
+      description: Only the administrator can update orders.
+      parameters: 
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+      responses:
+        201:
+          description: 'Your order has been succesfully updated'
+        500:
+          description: 'Missing or invalid parameters'
+        400:
+          description: 'Error: You need a token'
+        401:
+          description: 'Invalid Token'
+        406:
+          description: 'Error: Wrong parameters'
+      requestBody:
+        content:
+          json:
+            schema:
+              $ref: '#/components/schemas/OrderStatus'
+        description: To change the order status, use the id_order.
+  /update/products: 
+    patch:
+      tags: 
+        - Update
+      summary: Change status order.
+      description:  The token must belong to the Administrator. To change any products's field, you must send product Id, field and value.
+      parameters: 
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+      responses:
+        201:
+          description: 'Product has been succesfully update '
+        500:
+          description: 'Missing or invalid parameters'
+        400:
+          description: 'Error: You need a token'
+        401:
+          description: 'Invalid Token'
+      requestBody:
+        content:
+          json:
+            schema:
+              $ref: '#/components/schemas/ProductUpdate'
+        description: To change the any product's field, send product Id, field and value.
+  /update/users:
+    patch:
+      tags: 
+        - Update
+      summary: Change useer's personal data.
+      description: The token must belong to the Administrator. To change any product's field, you must send the user Id, field and value.
+      parameters: 
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+      responses:
+        201:
+          description: 'The user has been succesfully update'
+        500:
+          description: 'Missing or invalid parameters'
+        400:
+          description: 'Error: You need a token'
+        401:
+          description: 'Invalid Token'
+      requestBody:
+        content:
+          json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+        description: To change any user's field, send customer Id, field and value.
+  /update/newAdministrator:
+    patch:
+      tags: 
+        - Update
+      summary: Assign an user as new administrator.
+      description: The token must belong to the Administrator. To create a new administrator, send the user Id. 
+      parameters: 
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+      responses:
+        201:
+          description: 'The user has been succesfully update.'
+        500:
+          description: 'Missing or invalid parameters.'
+        400:
+          description: 'Error: You need a token.'
+        401:
+          description: 'Invalid Token'
+      requestBody:
+        content:
+          json:
+            schema:
+              $ref: '#/components/schemas/Id'
+        description: Send user Id , field 'user_type' and  value 'administrator'.
+  /delete/user:
+    delete:
+      tags: 
+        - Delete
+      summary: Delete user.
+      description: The token must belong to the Adminstrator.
+      parameters: 
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: 'User deleted.' 
+        400:
+          description: 'Error: You need a token.'
+        401:
+          description: 'Invalid Token'
+        500:
+          description: 'Missing or invalid parameters'
+      
+  /delete/product:
+    delete:
+      tags: 
+        - Delete
+      summary: Delete a product
+      description: The token must belong to the Admintrator.
+      parameters: 
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: 'Product deleted.'
+        400:
+          description: 'Error: You need a token.'
+        401:
+          description: 'Invalid Token.'
+        500:
+          description: 'Missing or invalid parameters.'
+      
+  /delete/order:
+    delete:
+      tags: 
+        - Delete
+      summary: Delete order
+      description: The token must belong to the Admintrator.
+      parameters: 
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: 'Order deleted.'
+        400:
+          description: 'Error: You need a token.'
+        401:
+          description: 'Invalid Token.'
+        500:
+          description: 'Missing or invalid parameters.'
+
+components:
+  schemas:
+    login:
+      type: object
+      required: 
+        - email
+        - password
+      properties:
+        Token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6ikpXVCJ9.eyJpZCI6MywidXnlcm5hbWUiOiJ1c2VybmFtZSIsImVtYWlsIjoiZW1haWxAZW1haWwuY28tIiwidXNlcnR5cGUiOiJ1c2VyIiwiaWF0IjoxNTg3NTk5MjI3fQ.e4VeGROenIfmugForBKo3QWRgZo6qI-Addwy2-qbqGM"
+    LogInReq:
+      type: object
+      required: 
+        - user_name
+        - user_type
+        - password
+      properties:
+        user_name:
+          type: string
+          example: "john2"
+        user_type:
+          type: string
+          example: "user"
+        password:
+          type: string
+          example: "1234"
+    NewUser:
+      type: object
+      required: 
+        - name
+        - last_name
+        - user_name
+        - email
+        - phone
+        - adress
+        - password
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          example: Mike
+        last_name:
+            type: string
+            example: Bengio
+        user_name:
+          type: string
+          example: Mike78
+        email:
+          type: string
+          example: Mike78@gmail.com
+        phone:
+          type: integer
+          example: 89645745236
+        adress:
+          type: string
+          example: "1124 Random Rd. El Cajon, CA 92020. "
+        password:
+          type: string
+    UserUpdate:
+      type: "object"
+      required: 
+        - id
+        - field
+        - value
+      properties:
+        id:
+          type: integer
+          format: int
+        field:
+          type: string
+          example: "'userName'||'fullName'||'phone'||'adress'"
+        value:
+          type: string
+          example: 'newUserName || newFullName || 15522004488 || newAdress'
+    Product:
+      type: "object"
+      required: 
+         - id
+      properties:
+        id:
+          type: integer
+          format: int
+    ProductUpdate:
+      type: "object"
+      required: 
+        - id
+        - field
+        - value
+      properties:
+        id:
+          type: integer
+          format: int
+        field:
+          type: string
+          example: 'name // price // image_url'
+        value:
+          type: string
+          example: 'Mac burger with fries // 20 // https://newurl.com'
+    NewProductAdded:
+      type: "object"
+      required: 
+        - name
+        - price
+        - image_url
+      properties:
+        name:
+          type: string
+          example: Mega burger
+        price:
+          type: integer
+          example: 250
+        imageUrl:
+          type: "string"
+          description: "Image URL"
+          example: "https://images.com/img.jpg"
+    ProductIdResponse:
+      type: "object"
+      required: 
+        - token
+        - productId
+      properties:
+        productId:
+          type: array
+          items: 
+            type: integer
+            example: 1,2,3
+    SpecificOrder:
+      type: "object"
+      required: 
+        - token
+        - products
+      properties:
+        id:
+          type: integer
+          format: int
+        status:
+          type: string
+          format: enum
+          example: "NEW /CONFIRM / IN PROCESS / SEND / CANCELED / DELIVERED "
+        time:
+          type: string
+          format: "hh:mm:ss"
+        payment:
+          type: string
+          format: enum
+          example: "pending / paid"
+        customer:
+          type: integer
+          example: 2
+          description: user id
+    OrderStatus:
+      type: "object"
+      required: 
+        - id
+        - status
+      properties:
+        id:
+          type: integer
+          format: int
+        status:
+          type: string
+          format: enum
+          example: "NEW /CONFIRM / IN PROCESS / SEND / CANCELED / DELIVERED"
+    Id:
+      type: "object"
+      required: 
+        - id
+      properties:
+        id:
+          type: integer
+          format: int
+# Added by API Auto Mocking Plugin
+servers:
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/Moises-dev08/DelilahRestoProyect/1.0.0
