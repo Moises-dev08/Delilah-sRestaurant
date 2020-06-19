@@ -13,5 +13,5 @@ To import the data base, go to DB folder and open the SQLsetup.js file.
 In order to initialize the server go to server.js file.
 
 ### GitHub
-Here the GitHub link to access the proyect:
+Here the GitHub link to access the project:
 https://github.com/Moises-dev08/Delilah-sRestaurant 
