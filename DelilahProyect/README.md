@@ -7,11 +7,11 @@ This app contains both frontend and backend devolpment.
 The endpoints specifications are in the spec.yml file.
 
 ### Data base model
-To import the data base, go to DB folder and open the setupSQL.js file. 
+To import the data base, go to DB folder and open the SQLsetup.js file. 
 
 ### Server
 In order to initialize the server go to server.js file.
 
 ### GitHub
-Here is the GitHub link of the proyect:
+Here the GitHub link to access the proyect:
 https://github.com/Moises-dev08/Delilah-sRestaurant 
