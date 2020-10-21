@@ -1,7 +1,7 @@
 # Delilah's Restaurant Project
 This app project was designed to give food shops the possibility of having a website where their customers can make online orders.
 
-This app contains both frontend and backend devolpment.
+This app contains only the backend.
 
 ## API specifications 
 The endpoints specifications are in the spec.yml file.
