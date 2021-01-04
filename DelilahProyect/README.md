@@ -1,5 +1,5 @@
-# Delilah's Restaurant Project
-This app project was designed to give food shops the possibility of having a website where their customers can make online orders.
+# RESTful API - Delilah's Restaurant Project
+This project was build for a fake restaurant service.
 
 This app contains only the backend.
 
